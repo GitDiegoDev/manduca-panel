@@ -37,14 +37,29 @@ let currentStockProduct = null;
 async function loadCategories() {
   try {
     const response = await apiFetch('/categories');
+    console.log('Categorías recibidas:', response);
 
     const filterSelect = document.getElementById('filterCategory');
     const modalSelect = document.getElementById('productCategory');
 
+    if (!filterSelect || !modalSelect) {
+      console.warn('No se encontraron los elementos select para categorías');
+      return;
+    }
+
     filterSelect.innerHTML = '<option value="">Todas</option>';
     modalSelect.innerHTML = '<option value="">Seleccionar</option>';
 
-    response.categories.forEach(category => {
+    // Manejar diferentes formatos de respuesta
+    const categoryList = Array.isArray(response)
+      ? response
+      : response.categories || response.data || [];
+
+    if (categoryList.length === 0) {
+      console.info('No se encontraron categorías o el formato es desconocido');
+    }
+
+    categoryList.forEach(category => {
       const opt1 = document.createElement('option');
       opt1.value = category.id;
       opt1.textContent = category.name;
@@ -54,28 +69,17 @@ async function loadCategories() {
       modalSelect.appendChild(opt2);
     });
 
+    // Actualizar variable global por si se usa en otro lugar
+    categories = categoryList;
+
   } catch (error) {
-    console.error('Error cargando categorías', error);
-    alert('No se pudieron cargar las categorías');
+    console.error('Error cargando categorías:', error);
+    // Mostrar más info del error si es posible
+    const errorMsg = error.message || (typeof error === 'string' ? error : 'Error desconocido');
+    console.error('Detalle del error:', errorMsg);
+    alert('No se pudieron cargar las categorías. Verifique la consola para más detalles.');
   }
 }
-
-
-  const filterSelect = document.getElementById('filterCategory');
-  const modalSelect = document.getElementById('productCategory');
-
-  filterSelect.innerHTML = '<option value="">Todas</option>';
-  modalSelect.innerHTML = '<option value="">Seleccionar</option>';
-
-  categories.forEach(category => {
-    const opt1 = document.createElement('option');
-    opt1.value = category.id;
-    opt1.textContent = category.name;
-    filterSelect.appendChild(opt1);
-
-    const opt2 = opt1.cloneNode(true);
-    modalSelect.appendChild(opt2);
-  });
 
 
 /* =========================
