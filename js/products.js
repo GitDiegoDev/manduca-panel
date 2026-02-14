@@ -1,3 +1,5 @@
+let categories = [];
+
 document.addEventListener('DOMContentLoaded', async () => {
   const user = getUser();
   document.getElementById('userName').textContent = user.name;
