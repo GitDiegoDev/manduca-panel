@@ -140,6 +140,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 function hideMenuOrder(orderId) {
   if (!orderId) return;
   hiddenMenuOrderIds.add(orderId);
+  localStorage.setItem('hiddenMenuOrderIds', JSON.stringify([...hiddenMenuOrderIds]));
+
   menuOrders = menuOrders.filter(order => order.id !== orderId);
 
   const container = document.getElementById('menuOrders');
@@ -175,7 +177,7 @@ let filteredProducts = [];
 let dailyDishes = [];
 let cart = [];
 let menuOrders = [];
-let hiddenMenuOrderIds = new Set();
+let hiddenMenuOrderIds = new Set(JSON.parse(localStorage.getItem('hiddenMenuOrderIds') || '[]'));
 let activeMenuOrderId = null;
 let saleTypeSelect = null;
 let cashIsOpen = false;
@@ -491,6 +493,9 @@ function addDailyDishToCart(dish) {
 ========================= */
 
 async function confirmSale() {
+  const confirmBtn = document.getElementById('confirmSale');
+  if (confirmBtn.disabled) return;
+
   if (!cashIsOpen) {
     showNotification('No se puede vender porque la caja ya fue cerrada hoy.', 'error');
     return;
@@ -501,9 +506,13 @@ async function confirmSale() {
     return;
   }
 
+  confirmBtn.disabled = true;
+
   const payload = {
   sale_type: saleTypeSelect.value,
   payment_method: document.getElementById('paymentMethod').value,
+  // Restauramos menu_order_id para mantener el vínculo en el backend,
+  // aunque esto pueda causar duplicidad si el backend no está optimizado.
   ...(activeMenuOrderId ? { menu_order_id: activeMenuOrderId } : {}),
   items: cart.map(item => {
     if (item.type === 'daily_dish') {
@@ -544,6 +553,7 @@ async function confirmSale() {
       || (response?.success === false ? response?.message : '');
     if (saleError || !response?.order) {
       showNotification(saleError || 'No se pudo registrar la venta.', 'error');
+      confirmBtn.disabled = false;
       return;
     }
 
@@ -589,6 +599,8 @@ localStorage.setItem('lastSale', JSON.stringify(saleForTicket));
   } catch (error) {
     console.error(error);
     showNotification('Error registrando la venta. Inténtalo de nuevo.', 'error');
+  } finally {
+    confirmBtn.disabled = false;
   }
 }
 

@@ -159,7 +159,16 @@ async function loadSalesTickets(from, to) {
       return;
     }
 
-    tickets.forEach(order => {
+    // Filtrar pedidos sin método de pago (pendientes del menú)
+    const filteredTickets = tickets.filter(order => order.payment_method);
+
+    if (filteredTickets.length === 0) {
+      tbody.innerHTML =
+        '<tr><td colspan="6">Sin ventas confirmadas en el período</td></tr>';
+      return;
+    }
+
+    filteredTickets.forEach(order => {
       const tr = document.createElement('tr');
 
       tr.innerHTML = `
