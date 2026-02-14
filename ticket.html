@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Ticket de venta</title>
+  <style>
+    body {
+      font-family: monospace;
+      font-size: 14px;
+      max-width: 280px;
+      margin: auto;
+    }
+
+    h1, h2 {
+      text-align: center;
+      margin: 4px 0;
+    }
+
+    .line {
+      border-top: 1px dashed #000;
+      margin: 8px 0;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .total {
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .center {
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <h1 id="ticketSiteName">Manducá</h1>
+  <p class="center" id="ticketDate"></p>
+  <p class="center">Venta #<span id="ticketOrderId"></span></p>
+
+  <div class="line"></div>
+
+  <div id="ticketItems"></div>
+
+  <div class="line"></div>
+
+  <div class="row total">
+    <span>TOTAL</span>
+    <span id="ticketTotal">$0.00</span>
+  </div>
+
+  <p class="center" id="ticketPayment"></p>
+  <p class="center" id="ticketSaleType"></p>
+
+  <div class="line"></div>
+
+  <p class="center">Gracias por su compra</p>
+
+  <script src="js/config.js"></script>
+<script src="js/http.js"></script>
+<script src="js/ticket.js"></script>
+
+</body>
+</html>

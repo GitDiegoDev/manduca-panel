@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Manducá | Dashboard</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<aside class="sidebar">
+  <h2 class="sidebar-title" id="siteName">Manducá</h2>
+
+  <nav class="sidebar-nav">
+    <a href="dashboard.html" class="active">Dashboard</a>
+    <a href="pos.html">Ventas</a>
+    <a href="daily-dishes.html">Platos del día</a>
+    <a href="products.html">Productos</a>
+    <a href="site-config.html">Configuración</a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <span id="userName"></span>
+    <button onclick="logout()">Cerrar sesión</button>
+  </div>
+</aside>
+
+<div class="content">
+
+<header class="topbar">
+  <h1 id="siteName">Manducá</h1>
+</header>
+
+<section class="filters">
+  <label>
+    Desde:
+    <input type="date" id="fromDate">
+  </label>
+
+  <label>
+    Hasta:
+    <input type="date" id="toDate">
+  </label>
+
+  <button id="applyFilters">Aplicar</button>
+</section>
+
+<main class="dashboard">
+
+  <!-- =========================
+       TARJETAS EXISTENTES
+       ========================= -->
+
+  <section class="card">
+    <h2>Ventas de hoy</h2>
+    <p id="todayTotal">$0</p>
+    <small id="todayOrders">0 órdenes</small>
+  </section>
+
+  <section class="card">
+    <h2>Ventas del período</h2>
+    <p id="periodTotal">$0</p>
+    <small id="periodOrders">0 órdenes</small>
+  </section>
+
+  <section class="card">
+    <h2>Hoy vs Ayer</h2>
+    <p>Hoy: <strong id="vsTodayTotal">$0</strong></p>
+    <p>Ayer: <strong id="vsYesterdayTotal">$0</strong></p>
+    <small id="vsVariation">—</small>
+  </section>
+
+  <section class="card">
+    <h2>Ventas por método de pago</h2>
+    <ul id="paymentsList"></ul>
+  </section>
+
+  <section class="card">
+    <h2>Productos más vendidos</h2>
+    <ul id="topProductsList"></ul>
+  </section>
+
+  <section class="card">
+    <h2>Caja</h2>
+    <p id="cashStatus">—</p>
+  </section>
+
+  <section class="card">
+    <h2>Stock bajo</h2>
+    <p id="lowStock">0 productos</p>
+  </section>
+
+  <!-- =========================
+       🧾 TICKETS DE VENTA
+       ========================= -->
+  <section class="card full-width">
+    <h2>Tickets de venta</h2>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Fecha</th>
+          <th>Total</th>
+          <th>Pago</th>
+          <th>Tipo</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="salesTicketsTable">
+        <tr>
+          <td colspan="6">Cargando ventas…</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- =========================
+       🧾 CIERRES DE CAJA
+       ========================= -->
+  <section class="card full-width">
+    <h2>Cierres de caja</h2>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Usuario</th>
+          <th>Esperado</th>
+          <th>Declarado</th>
+          <th>Diferencia</th>
+          <th>Estado</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="cashClosuresTable">
+        <tr>
+          <td colspan="7">Cargando cierres…</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+</main>
+
+<!-- SCRIPTS -->
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/guard.js"></script>
+<script src="js/http.js"></script>
+<script src="js/dashboard.js"></script>
+
+</div>
+</body>
+</html>

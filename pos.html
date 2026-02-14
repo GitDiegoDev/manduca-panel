@@ -1,0 +1,170 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Manducá | POS</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/pos-fixes.css"> 
+</head>
+<body>
+
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar-nav">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="pos.html" class="active">Ventas</a>
+    <a href="daily-dishes.html">Platos del día</a>
+    <a href="products.html">Productos</a>
+    <a href="site-config.html">Configuración</a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <span id="userName"></span>
+    <button onclick="logout()">Cerrar sesión</button>
+  </div>
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <h1>POS · Punto de venta</h1>
+
+    <div class="pos-controls">
+
+      <select id="saleType">
+        <option value="retail">Venta minorista</option>
+        <option value="wholesale">Venta mayorista</option>
+      </select>
+      <button id="cashActionBtn" class="primary">
+  Abrir caja
+</button>
+
+
+      <span id="posDate"></span>
+
+      <span id="cashStatus" class="cash-status">Verificando caja...</span>
+
+    </div>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="pos-layout">
+
+    <!-- PRODUCTOS + PLATO DEL DIA -->
+    <section class="pos-products">
+      <h2>Productos</h2>
+      <input type="text" id="productSearch" placeholder="Buscar producto..." class="pos-search"/>
+
+      <div class="products-compact-layout">
+        <div class="products-main">
+          <h3 class="section-subtitle">Catálogo</h3>
+          <div id="productsList" class="products-grid products-grid-main">
+            <p class="placeholder">Seleccioná tipo de venta para cargar productos</p>
+          </div>
+        </div>
+
+        <div class="daily-dishes-inline">
+          <h3 class="section-subtitle">Plato del día</h3>
+          <div id="dailyDishesList" class="products-grid products-grid-daily">
+            <p class="placeholder">Cargando platos del día...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PEDIDOS DEL MENÚ -->
+    <section class="pos-menu-orders">
+      <h2>Pedidos del menú</h2>
+      <div id="menuOrders" class="menu-orders-panel"></div>
+    </section>
+
+    <!-- CARRITO -->
+    <section class="pos-cart">
+      <h2>Venta actual</h2>
+
+      <div class="cart-table-wrapper">
+        <table class="cart-table">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Cant.</th>
+              <th>Subtotal</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="cartBody">
+            <!-- items dinámicos -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="cart-summary">
+        <p>
+          Total:
+          <strong id="cartTotal">$0.00</strong>
+        </p>
+
+        <label>
+          Método de pago
+          <select id="paymentMethod">
+            <option value="cash">Efectivo</option>
+            <option value="debit">Débito</option>
+            <option value="credit">Crédito</option>
+            <option value="transfer">Transferencia</option>
+            <option value="other">Otro</option>
+          </select>
+        </label>
+
+        <button id="confirmSale" class="primary">
+          Confirmar venta
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <div id="cashModal" class="modal hidden">
+  <div class="modal-content">
+
+    <h2>Cierre de caja</h2>
+
+    <p>Total esperado: <strong id="cashExpected">$0.00</strong></p>
+
+    <label>
+      Monto declarado
+      <input type="number" id="cashDeclared" step="0.01" min="0">
+    </label>
+
+    <label>
+      Observaciones
+      <textarea id="cashNotes"></textarea>
+    </label>
+
+    <div class="modal-actions">
+      <button id="confirmCashClose" class="danger">Confirmar cierre</button>
+      <button onclick="closeCashModal()">Cancelar</button>
+    </div>
+
+  </div>
+</div>
+
+  <!-- MODAL DE NOTIFICACIÓN -->
+  <div id="notificationModal" class="modal hidden">
+    <div class="modal-content notification">
+      <p id="notificationMessage"></p>
+      <div class="modal-actions">
+        <button id="notificationAccept" onclick="closeNotification()">Aceptar</button>
+        <button id="notificationCancel" onclick="closeNotification()" style="display:none;">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- SCRIPTS BASE -->
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/guard.js"></script>
+  <script src="js/http.js"></script>
+
+  <!-- SCRIPT POS -->
+  <script src="js/pos.js"></script>
+
+</body>
+</html>

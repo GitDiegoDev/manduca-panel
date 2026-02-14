@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Manducá | Configuración</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  
+
+  <!-- SIDEBAR (MISMA QUE DASHBOARD) -->
+  <aside class="sidebar">
+    <h2 class="sidebar-title" id="siteName">Manducá</h2>
+
+    <nav class="sidebar-nav">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="pos.html">Ventas</a>
+    <a href="daily-dishes.html"> Platos del día</a>
+    <a href="products.html">Productos</a>
+    <a href="site-config.html" class="active">Configuración</a>
+  </nav>
+
+    <div class="sidebar-footer">
+      <span id="userName"></span>
+      <button onclick="logout()">Cerrar sesión</button>
+    </div>
+  </aside>
+
+  <!-- CONTENIDO -->
+  <div class="content">
+
+    <header class="topbar">
+      <h1>Configuración del sitio</h1>
+    </header>
+
+    <main class="dashboard">
+
+      <section class="card">
+        <h2>Datos generales</h2>
+
+        <label>
+          Nombre del sitio
+          <input type="text" id="siteNameInput">
+        </label>
+
+        <label style="margin-top: 12px;">
+          <input type="checkbox" id="isOpenInput">
+          Local abierto
+        </label>
+
+        <div style="margin-top: 16px;">
+          <button id="saveConfigBtn">Guardar cambios</button>
+        </div>
+
+        <p id="configMessage" style="margin-top: 12px;"></p>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/guard.js"></script>
+  <script src="js/http.js"></script>
+  <script src="js/site-config.js"></script>
+</body>
+</html>

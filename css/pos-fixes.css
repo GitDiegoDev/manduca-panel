@@ -1,0 +1,336 @@
+﻿/* ========================================================================== 
+   POS FIXES - LAYOUT COMPACTO Y ADAPTABLE
+   ========================================================================== */
+
+.pos-layout {
+  display: grid !important;
+  grid-template-columns: minmax(380px, 1.15fr) minmax(320px, 0.95fr) 350px !important;
+  gap: 14px !important;
+  height: calc(100vh - 84px) !important;
+  overflow: hidden !important;
+  padding: 14px !important;
+}
+
+.pos-products,
+.pos-menu-orders,
+.pos-cart {
+  background: var(--bg-surface) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+  overflow: hidden !important;
+  min-height: 0 !important;
+}
+
+.pos-products,
+.pos-menu-orders {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.pos-products {
+  padding: 12px !important;
+  gap: 10px !important;
+}
+
+.pos-products .pos-search {
+  margin-bottom: 0 !important;
+}
+
+.products-compact-layout {
+  display: grid !important;
+  grid-template-rows: minmax(0, 1fr) minmax(170px, 0.62fr) !important;
+  gap: 10px !important;
+  min-height: 0 !important;
+  flex: 1 !important;
+}
+
+.products-main,
+.daily-dishes-inline {
+  border: 1px solid var(--border-color) !important;
+  border-radius: 10px !important;
+  background: var(--gray-50) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+}
+
+.daily-dishes-inline {
+  border-left: 4px solid var(--manduca-primary) !important;
+}
+
+.section-subtitle {
+  margin: 0 !important;
+  padding: 10px 12px 8px !important;
+  font-size: 0.78rem !important;
+  letter-spacing: 0.4px !important;
+  text-transform: uppercase !important;
+  color: var(--text-secondary) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+.products-grid {
+  min-height: 0 !important;
+}
+
+.products-grid-main,
+.products-grid-daily {
+  display: grid !important;
+  gap: 8px !important;
+  padding: 10px !important;
+  overflow-y: auto !important;
+  scrollbar-width: thin !important;
+  align-content: start !important;
+}
+
+.products-grid-main {
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important;
+}
+
+.products-grid-daily {
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)) !important;
+}
+
+#productsList .pos-product,
+#dailyDishesList .pos-product {
+  border: 1px solid var(--border-color) !important;
+  border-radius: 10px !important;
+  background: var(--bg-surface) !important;
+  padding: 10px !important;
+  min-height: 92px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  cursor: pointer !important;
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+#productsList .pos-product:hover,
+#dailyDishesList .pos-product:hover {
+  border-color: var(--manduca-primary) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  transform: translateY(-1px) !important;
+}
+
+#productsList .pos-product strong,
+#dailyDishesList .pos-product strong {
+  font-size: 0.82rem !important;
+  line-height: 1.25 !important;
+  font-weight: 700 !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  margin-bottom: 8px !important;
+}
+
+#productsList .pos-product span,
+#dailyDishesList .pos-product span {
+  font-size: 0.95rem !important;
+  font-weight: 800 !important;
+  color: var(--manduca-primary) !important;
+  line-height: 1 !important;
+}
+
+#productsList .pos-product small,
+#dailyDishesList .pos-product small {
+  margin-top: 6px !important;
+  font-size: 0.7rem !important;
+  color: var(--text-secondary) !important;
+}
+
+#dailyDishesList .pos-product.daily-dish {
+  background: #f7fbf4 !important;
+  border-color: #d4e7ca !important;
+}
+
+#productsList .placeholder,
+#dailyDishesList .placeholder {
+  grid-column: 1 / -1 !important;
+  text-align: center !important;
+  color: var(--text-muted) !important;
+  font-size: 0.86rem !important;
+  padding: 18px 8px !important;
+}
+
+.pos-menu-orders {
+  padding: 10px !important;
+  gap: 8px !important;
+}
+
+.pos-menu-orders h2 {
+  margin-bottom: 0 !important;
+}
+
+.menu-orders-panel {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)) !important;
+  gap: 8px !important;
+  overflow-y: auto !important;
+  padding: 2px !important;
+  min-height: 0 !important;
+  align-content: start !important;
+  scrollbar-width: thin !important;
+}
+
+.menu-order {
+  border: 1px solid #d9e7d1 !important;
+  border-radius: 10px !important;
+  background: linear-gradient(160deg, #ffffff 0%, #f8fcf6 100%) !important;
+  padding: 9px !important;
+  display: grid !important;
+  gap: 6px !important;
+  min-height: 118px !important;
+}
+
+.menu-order-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  align-items: flex-start !important;
+}
+
+.menu-order-header strong {
+  font-size: 0.83rem !important;
+  color: var(--text-primary) !important;
+  white-space: nowrap !important;
+}
+
+.menu-order-header span {
+  font-size: 0.75rem !important;
+  color: var(--text-secondary) !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.menu-order-info,
+.menu-order-total {
+  font-size: 0.76rem !important;
+  color: var(--text-secondary) !important;
+  line-height: 1.25 !important;
+}
+
+.menu-order-total {
+  color: var(--manduca-primary-dark) !important;
+  font-weight: 700 !important;
+}
+
+.menu-order .btn {
+  margin-top: auto !important;
+  width: 100% !important;
+  min-height: 30px !important;
+  font-size: 0.76rem !important;
+  padding: 6px 8px !important;
+  border-radius: 8px !important;
+}
+
+.menu-orders-panel .muted {
+  grid-column: 1 / -1 !important;
+  text-align: center !important;
+  padding: 22px 10px !important;
+  font-size: 0.85rem !important;
+  color: var(--text-muted) !important;
+}
+
+.pos-cart {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  padding: 0 !important;
+}
+
+.pos-cart .cart-table-wrapper {
+  flex: 1 !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  padding: 0 10px 10px !important;
+}
+
+.pos-cart .cart-table {
+  margin-top: 0 !important;
+}
+
+@media (max-width: 1320px) {
+  .pos-layout {
+    grid-template-columns: minmax(340px, 1.15fr) minmax(290px, 0.9fr) 320px !important;
+  }
+
+  .products-grid-main {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)) !important;
+  }
+
+  .menu-orders-panel {
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)) !important;
+  }
+}
+
+@media (max-width: 1120px) {
+  .pos-layout {
+    grid-template-columns: 1fr 1fr !important;
+    grid-template-areas:
+      "products cart"
+      "orders cart" !important;
+  }
+
+  .pos-products { grid-area: products; }
+  .pos-menu-orders { grid-area: orders; }
+  .pos-cart { grid-area: cart; }
+
+  .products-compact-layout {
+    grid-template-rows: minmax(0, 1fr) minmax(150px, 0.52fr) !important;
+  }
+}
+
+@media (max-width: 860px) {
+  .pos-layout {
+    grid-template-columns: 1fr !important;
+    grid-template-areas:
+      "products"
+      "orders"
+      "cart" !important;
+    height: auto !important;
+    min-height: calc(100vh - 84px) !important;
+    overflow: visible !important;
+  }
+
+  .pos-products,
+  .pos-menu-orders,
+  .pos-cart {
+    max-height: none !important;
+  }
+
+  .products-compact-layout {
+    grid-template-rows: auto auto !important;
+  }
+
+  .products-main,
+  .daily-dishes-inline,
+  .menu-orders-panel,
+  .pos-cart .cart-table-wrapper {
+    max-height: 320px !important;
+  }
+}
+
+#productsList::-webkit-scrollbar,
+#dailyDishesList::-webkit-scrollbar,
+.menu-orders-panel::-webkit-scrollbar,
+.pos-cart .cart-table-wrapper::-webkit-scrollbar {
+  width: 7px !important;
+}
+
+#productsList::-webkit-scrollbar-thumb,
+#dailyDishesList::-webkit-scrollbar-thumb,
+.menu-orders-panel::-webkit-scrollbar-thumb,
+.pos-cart .cart-table-wrapper::-webkit-scrollbar-thumb {
+  background: #cadbbf !important;
+  border-radius: 8px !important;
+}
+
+#productsList::-webkit-scrollbar-thumb:hover,
+#dailyDishesList::-webkit-scrollbar-thumb:hover,
+.menu-orders-panel::-webkit-scrollbar-thumb:hover,
+.pos-cart .cart-table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #b4caa7 !important;
+}

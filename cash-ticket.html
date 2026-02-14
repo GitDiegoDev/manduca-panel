@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Cierre de Caja</title>
+  <link rel="stylesheet" href="css/ticket.css">
+</head>
+<body>
+
+  <section class="ticket">
+
+    <h1 id="siteName">Manducá</h1>
+    <h2>Cierre de Caja</h2>
+    <small style="display:block; text-align:center;">
+  Documento no fiscal – Uso interno
+</small>
+
+    <p>
+      Fecha: <strong id="closureDate"></strong><br>
+      Hora: <strong id="closureTime"></strong><br>
+      Usuario: <strong id="closureUser"></strong>
+    </p>
+
+    <hr>
+
+    <h3>Resumen</h3>
+    <p>Ventas realizadas: <strong id="ordersCount"></strong></p>
+
+    <table>
+      <tr>
+        <td>Total esperado</td>
+        <td id="expectedAmount"></td>
+      </tr>
+      <tr>
+        <td>Total declarado</td>
+        <td id="declaredAmount"></td>
+      </tr>
+      <tr>
+        <td>Diferencia</td>
+        <td id="difference"></td>
+      </tr>
+    </table>
+
+    <hr>
+
+    <h3>Detalle por método de pago</h3>
+    <ul id="paymentBreakdown"></ul>
+
+    <hr>
+
+    <p>Observaciones: <strong id="closureNotes"></strong></p>
+
+    <hr>
+
+    <p class="footer">
+      Cierre generado por Manducá<br>
+      <span id="generatedAt"></span>
+    </p>
+
+  </section>
+
+  <script src="js/config.js"></script>
+<script src="js/http.js"></script>
+<script src="js/cash-ticket.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manducá | Login</title>
+  <link rel="stylesheet" href="css/styles.css">
+  
+  <!-- Favicon (opcional - agregar tu logo) -->
+  <!-- <link rel="icon" type="image/png" href="images/manduca-icon.png"> -->
+</head>
+<body>
+  
+
+  <!-- Elementos decorativos flotantes (opcional) 
+  <div class="decorative-circle"></div>
+  <div class="decorative-circle"></div>-->
+
+  <div class="login-container">
+    
+    <!-- OPCIÓN 1: Título de texto con degradado (actual) -->
+    <!--<h1>Manducá</h1> -->
+    
+    <!-- OPCIÓN 2: Logo como imagen (descomenta esta línea y comenta la anterior) -->
+     <h1><img src="images/logo.png" alt="Manducá" class="logo-img"></h1> 
+
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Email" required>
+      <input type="password" id="password" placeholder="Contraseña" required>
+
+      <button type="submit">Ingresar</button>
+
+      <p id="error" class="error"></p>
+      
+      <!-- Link opcional para recuperar contraseña -->
+      <!-- <div class="forgot-password">
+        <a href="recover-password.html">¿Olvidaste tu contraseña?</a>
+      </div> -->
+    </form>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>

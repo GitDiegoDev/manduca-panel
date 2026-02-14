@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Manducá | Productos</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar-nav">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="pos.html">Ventas</a>
+    <a href="daily-dishes.html"> Platos del día</a>
+    <a href="products.html" class="active">Productos</a>
+    <a href="site-config.html">Configuración</a>
+  </nav>
+  <div class="sidebar-footer">
+    <span id="userName"></span>
+    <button onclick="logout()">Cerrar sesión</button>
+  </div>
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <h1 id="siteName">Manducá</h1>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="content">
+
+    <!-- HEADER DEL MÓDULO -->
+    <section class="module-header">
+      <h2>Productos</h2>
+      <button id="btnNewProduct">➕ Nuevo producto</button>
+    </section>
+
+    <!-- FILTROS -->
+    <section class="filters">
+
+      <label>
+        Categoría
+        <select id="filterCategory">
+          <option value="">Todas</option>
+          <!-- se cargan dinámicamente -->
+        </select>
+      </label>
+
+      <label>
+        Estado
+        <select id="filterActive">
+          <option value="">Todos</option>
+          <option value="1">Activos</option>
+          <option value="0">Inactivos</option>
+        </select>
+      </label>
+
+      <button id="applyFilters">Aplicar</button>
+
+    </section>
+
+    <!-- TABLA DE PRODUCTOS -->
+    <section class="table-container">
+      <table class="products-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Categoría</th>
+            <th>Precio minorista</th>
+            <th>Precio mayorista</th>
+            <th>Stock</th>
+            <th>En menú</th>
+            <th>Activo</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="productsTableBody">
+          <!-- filas dinámicas -->
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+
+  <!-- MODAL AJUSTE DE STOCK (se implementa después) -->
+<div id="stockModal" class="modal hidden">
+  <div class="modal-content">
+    <h3>Ajustar stock</h3>
+
+    <p id="stockProductName"></p>
+
+    <label>
+     Tipo de movimiento
+     <select id="stockType">
+       <option value="adjust">Ajuste manual</option>
+       <option value="purchase">Ingreso de mercadería</option>
+     </select>
+    </label>
+
+    <label>
+      Cantidad
+      <input type="number" id="stockQuantity">
+    </label>
+
+    <label>
+      Motivo (opcional)
+      <input type="text" id="stockReason">
+    </label>
+
+    <div class="modal-actions">
+      <button id="confirmStockAdjust">Guardar</button>
+      <button id="cancelStockAdjust">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PRODUCTO -->
+<div id="productModal" class="modal hidden">
+  <div class="modal-content">
+    <h2 id="modalTitle">Nuevo producto</h2>
+
+    <form id="productForm">
+      <input type="hidden" id="productId">
+
+      <label>
+        Categoría
+        <select id="productCategory" required></select>
+      </label>
+
+      <label>
+        Nombre
+        <input type="text" id="productName" required>
+      </label>
+
+      <label>
+        Descripción
+        <textarea id="productDescription"></textarea>
+      </label>
+
+      <label>
+        Precio minorista
+        <input type="number" id="priceRetail" step="0.01" min="0" required>
+      </label>
+
+      <label>
+        Precio mayorista
+        <input type="number" id="priceWholesale" step="0.01" min="0">
+      </label>
+
+      <label>
+        Stock mínimo
+        <input type="number" id="lowStock" min="0">
+      </label>
+
+      <label>
+        <input type="checkbox" id="showInMenu">
+        Mostrar en menú
+      </label>
+
+      <label>
+        <input type="checkbox" id="active" checked>
+        Producto activo
+      </label>
+
+      <div class="modal-actions">
+        <button type="submit">Guardar</button>
+        <button type="button" onclick="closeProductModal()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+  <!-- SCRIPTS BASE -->
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/guard.js"></script>
+  <script src="js/http.js"></script>
+
+  <!-- SCRIPT DEL MÓDULO -->
+  <script src="js/products.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Manducá | Platos del día</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar-nav">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="pos.html">Ventas</a>
+    <a href="daily-dishes.html" class="active"> Platos del día</a>
+    <a href="products.html">Productos</a>
+    <a href="site-config.html">Configuración</a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <span id="userName"></span>
+    <button onclick="logout()">Cerrar sesión</button>
+  </div>
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <h1>Platos del día</h1>
+  </header>
+
+  <main class="content">
+
+    <!-- CONTROLES -->
+    <section class="module-header">
+      <input type="date" id="dishDate">
+      <button id="btnNewDish">➕ Nuevo plato</button>
+    </section>
+
+    <!-- LISTADO -->
+    <section class="table-container">
+      <table class="products-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Precio</th>
+            <th>Activo</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="dailyDishesTable"></tbody>
+      </table>
+    </section>
+
+  </main>
+
+  <!-- MODAL -->
+  <div id="dishModal" class="modal hidden">
+    <div class="modal-content">
+      <h2 id="dishModalTitle">Nuevo plato</h2>
+
+      <form id="dishForm">
+        <input type="hidden" id="dishId">
+
+        <label>
+          Nombre
+          <input type="text" id="dishName" required>
+        </label>
+
+        <label>
+          Descripción
+          <textarea id="dishDescription"></textarea>
+        </label>
+
+        <label>
+          Precio
+          <input type="number" id="dishPrice" step="0.01" min="0" required>
+        </label>
+
+        <div class="form-group">
+          <label for="dailyStock">Stock inicial</label>
+            <input
+                type="number"
+                id="dailyStock"
+                min="0"
+                value="0"
+                required
+            />
+      </div>
+
+
+        <label>
+          <input type="checkbox" id="dishActive" checked>
+          Activo
+        </label>
+
+        <div class="modal-actions">
+          <button type="submit">Guardar</button>
+          <button type="button" onclick="closeDishModal()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/guard.js"></script>
+  <script src="js/http.js"></script>
+  <script src="js/daily-dishes.js"></script>
+
+</body>
+</html>
