@@ -530,11 +530,14 @@ async function confirmSale() {
 
   };
 
+  const endpoint = activeMenuOrderId ? `/pos/orders/${activeMenuOrderId}` : '/pos/orders';
+  const method = activeMenuOrderId ? 'PUT' : 'POST';
+
   try {
-    const response = await apiFetch('/pos/orders', {
-  method: 'POST',
-  body: JSON.stringify(payload)
-});
+    const response = await apiFetch(endpoint, {
+      method: method,
+      body: JSON.stringify(payload)
+    });
 
     const saleError = response?.error
       || response?.detail
