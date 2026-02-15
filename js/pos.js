@@ -510,8 +510,8 @@ function addDailyDishToCart(dish) {
 ========================= */
 
 async function confirmSale() {
-  const confirmBtn = document.getElementById('confirmSale');
-  if (confirmBtn.disabled) return;
+  const confirmSaleBtn = document.getElementById('confirmSale');
+  if (confirmSaleBtn && confirmSaleBtn.disabled) return;
 
   if (!cashIsOpen) {
     showNotification('No se puede vender porque la caja ya fue cerrada hoy.', 'error');
@@ -523,7 +523,7 @@ async function confirmSale() {
     return;
   }
 
-  confirmBtn.disabled = true;
+  if (confirmSaleBtn) confirmSaleBtn.disabled = true;
 
   const payload = {
   sale_type: saleTypeSelect.value,
@@ -572,7 +572,7 @@ async function confirmSale() {
       || (response?.success === false ? response?.message : '');
     if (saleError || !response?.order) {
       showNotification(saleError || 'No se pudo registrar la venta.', 'error');
-      confirmBtn.disabled = false;
+      if (confirmSaleBtn) confirmSaleBtn.disabled = false;
       return;
     }
 
@@ -611,22 +611,59 @@ localStorage.setItem('lastSale', JSON.stringify(saleForTicket));
     console.error(error);
     showNotification('Error registrando la venta. Inténtalo de nuevo.', 'error');
   } finally {
-    confirmBtn.disabled = false;
+    if (confirmSaleBtn) confirmSaleBtn.disabled = false;
+  }
+}
+
+function renderCashStatus() {
+  const cashEl = document.getElementById('cashStatus');
+  const confirmSaleBtn = document.getElementById('confirmSale');
+  const cashActionBtn = document.getElementById('cashActionBtn');
+
+  if (!cashEl || !confirmSaleBtn || !cashActionBtn) return;
+
+  if (cashIsOpen) {
+    cashEl.textContent = 'Caja abierta';
+    cashEl.className = 'cash-status cash-open';
+
+    confirmSaleBtn.disabled = false;
+    confirmSaleBtn.title = '';
+
+    cashActionBtn.textContent = 'Cerrar caja';
+    cashActionBtn.className = 'danger';
+
+  } else {
+    cashEl.textContent = 'Caja cerrada';
+    cashEl.className = 'cash-status cash-closed';
+
+    confirmSaleBtn.disabled = true;
+    confirmSaleBtn.title = 'Debés abrir la caja para vender';
+
+    cashActionBtn.textContent = cashClosedToday ? 'Reabrir caja' : 'Abrir caja';
+    cashActionBtn.className = 'primary';
   }
 }
 
 async function loadCashStatus() {
   try {
     const data = await apiFetch('/dashboard/cash-summary');
+
+    // Caso 200 OK pero con mensaje de error (algunos backends devuelven 200 con error: "...")
     const summaryError = getApiErrorMessage(data);
-    if (summaryError) {
-      throw new Error(summaryError);
+    const isNoCashMsg = summaryError && (
+      summaryError.toLowerCase().includes('no hay caja') ||
+      summaryError.toLowerCase().includes('no hay una caja abierta')
+    );
+
+    if (isNoCashMsg) {
+      cashIsOpen = false;
+      cashClosedToday = getClosedTodayFlag(data);
+      currentClosureId = null;
+      renderCashStatus();
+      return;
     }
 
-    const cashEl = document.getElementById('cashStatus');
-    const confirmBtn = document.getElementById('confirmSale');
-    const cashActionBtn = document.getElementById('cashActionBtn');
-
+    // Éxito: Hay una caja abierta
     cashIsOpen = getCashOpenFlag(data);
     cashClosedToday = getClosedTodayFlag(data);
     currentClosureId = extractClosureIdFromSummary(data);
@@ -634,35 +671,28 @@ async function loadCashStatus() {
     const expectedFromSummary = extractExpectedAmount(data);
     if (expectedFromSummary !== null) {
       expectedCashAmount = expectedFromSummary;
-    } else {
-      // Si el backend no devuelve el monto esperado, lo dejamos en 0 o el último valor conocido.
-      // Ya no usamos fallback de localStorage para evitar datos inconsistentes entre dispositivos.
-      console.warn('Backend no devolvió monto esperado de caja.');
     }
 
-    if (cashIsOpen) {
-      cashEl.textContent = 'Caja abierta';
-      cashEl.className = 'cash-status cash-open';
-
-      confirmBtn.disabled = false;
-      confirmBtn.title = '';
-
-      cashActionBtn.textContent = 'Cerrar caja';
-      cashActionBtn.className = 'danger';
-
-    } else {
-      cashEl.textContent = 'Caja cerrada';
-      cashEl.className = 'cash-status cash-closed';
-
-      confirmBtn.disabled = true;
-      confirmBtn.title = 'Debés abrir la caja para vender';
-
-      cashActionBtn.textContent = cashClosedToday ? 'Reabrir caja' : 'Abrir caja';
-      cashActionBtn.className = 'primary';
-    }
+    renderCashStatus();
 
   } catch (error) {
-    console.error('Error verificando estado de caja', error);
+    // Detectar si el error es simplemente que no hay caja (404 o mensaje específico)
+    const errorMsg = (error.error || error.message || '').toLowerCase();
+    const isClosedState = (error.$status === 404) ||
+                          errorMsg.includes('no hay caja') ||
+                          errorMsg.includes('no hay una caja abierta');
+
+    if (isClosedState) {
+      cashIsOpen = false;
+      cashClosedToday = getClosedTodayFlag(error) || cashClosedToday;
+      currentClosureId = null;
+      renderCashStatus();
+    } else {
+      // Error real (500, Network error, etc.)
+      console.error('Error verificando estado de caja', error);
+      cashIsOpen = false;
+      renderCashStatus();
+    }
   }
 }
 
@@ -741,7 +771,7 @@ function closeCashModal() {
   document.getElementById('cashModal').classList.add('hidden');
 }
 async function confirmCashClosure() {
-  const confirmBtn = document.getElementById('confirmCashClose');
+  const confirmClosureBtn = document.getElementById('confirmCashClose');
 
   const declaredInput = document.getElementById('cashDeclared').value;
   if (declaredInput === '' || declaredInput === null) {
@@ -756,7 +786,7 @@ async function confirmCashClosure() {
     return;
   }
 
-  if (confirmBtn) confirmBtn.disabled = true;
+  if (confirmClosureBtn) confirmClosureBtn.disabled = true;
 
   const notes = document.getElementById('cashNotes').value;
 
@@ -773,17 +803,25 @@ async function confirmCashClosure() {
     const closurePayload = extractClosurePayload(response);
     if (closureError || !closurePayload) {
       showNotification(closureError || 'No se pudo cerrar la caja.', 'error');
+      if (confirmClosureBtn) confirmClosureBtn.disabled = false;
       return;
     }
 
-    showNotification('Caja cerrada correctamente.', 'success');
-
-    // LIMPIEZA TOTAL
+    // 1. Éxito: Actualizar estado local inmediatamente para evitar race conditions
+    cashIsOpen = false;
+    cashClosedToday = true;
+    currentClosureId = null;
     cart = [];
     renderCart();
 
+    // 2. Cerrar modal y refrescar UI
     closeCashModal();
-    await loadCashStatus();
+    renderCashStatus();
+
+    // 3. Abrir ticket inmediatamente
+    const ticketUrl = closurePayload.id
+      ? `cash-ticket.html?id=${closurePayload.id}`
+      : 'cash-ticket.html';
 
     localStorage.setItem(
       'lastCashClosure',
@@ -793,21 +831,17 @@ async function confirmCashClosure() {
       })
     );
 
+    window.open(ticketUrl, '_blank');
+    showNotification('Caja cerrada correctamente. Se ha abierto el ticket en una nueva pestaña.', 'success');
 
-    // Mostrar opción para ver el ticket
-    showNotification('¿Desea ver el ticket de cierre?', 'info', 'Ver ticket', () => {
-      closeNotification();
-      const ticketUrl = closurePayload.id
-        ? `cash-ticket.html?id=${closurePayload.id}`
-        : 'cash-ticket.html';
-      window.location.href = ticketUrl;
-    }, true, 'No', closeNotification);
+    // 4. Sincronizar con el backend en segundo plano
+    loadCashStatus();
 
   } catch (error) {
     showNotification('Error al cerrar caja. Inténtalo de nuevo.', 'error');
     console.error(error);
   } finally {
-    if (confirmBtn) confirmBtn.disabled = false;
+    if (confirmClosureBtn) confirmClosureBtn.disabled = false;
   }
 }
 
