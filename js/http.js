@@ -18,3 +18,15 @@ async function apiFetch(endpoint, options = {}) {
 
   return response.json();
 }
+
+/**
+ * Formatea un valor numérico como moneda (2 decimales, separador es-AR).
+ * @param {number|string} value
+ * @returns {string}
+ */
+function formatMoney(value) {
+  return Number(value || 0).toLocaleString('es-AR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}

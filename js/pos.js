@@ -40,7 +40,7 @@ async function loadMenuOrders() {
         </div>
 
         <div class="menu-order-total">
-          Total: $${Number(order.total_amount).toFixed(2)}
+          Total: ${formatMoney2(order.total_amount)}
         </div>
 
         <button class="btn btn-primary"
@@ -182,8 +182,8 @@ let activeMenuOrderId = null;
 let saleTypeSelect = null;
 let cashIsOpen = false;
 let cashClosedToday = false;
-let currentCashExpected = 0;
-let totalSales = parseFloat(localStorage.getItem('totalSales') || 0);
+let expectedCashAmount = 0;
+let currentClosureId = null;
 
 function getApiErrorMessage(payload) {
   if (!payload || typeof payload !== 'object') return '';
@@ -195,6 +195,17 @@ function toFiniteNumber(value) {
   if (typeof value === 'string' && value.trim() === '') return null;
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : null;
+}
+
+function extractClosureIdFromSummary(payload) {
+  if (!payload || typeof payload !== 'object') return null;
+  // Buscamos el ID en diferentes posibles ubicaciones del payload
+  return payload.id ||
+         payload.closure_id ||
+         payload.cash_id ||
+         payload.closure?.id ||
+         payload.cash?.id ||
+         payload.current_closure?.id;
 }
 
 function extractExpectedAmount(payload) {
@@ -271,7 +282,7 @@ function getClosedTodayFlag(payload) {
 }
 
 function formatMoney2(value) {
-  return `$${Number(value || 0).toFixed(2)}`;
+  return `$${formatMoney(value)}`;
 }
 
 
@@ -315,7 +326,7 @@ function renderProducts() {
 
     div.innerHTML = `
       <strong>${product.name}</strong>
-      <span>$${Number(product.price).toFixed(2)}</span>
+      <span>${formatMoney2(product.price)}</span>
       <small>Stock: ${product.stock}</small>
     `;
 
@@ -330,10 +341,10 @@ async function loadDailyDishes() {
   container.innerHTML = '<p>Cargando platos del día...</p>';
 
   try {
-    const today = new Date().toISOString().split('T')[0];
-
+    // Nota: Eliminamos el envío de la fecha del cliente para que el servidor decida
+    // cuál es el "día de hoy" según su propia configuración de zona horaria.
     const response = await apiFetch(
-      `/daily-dishes?date=${today}&active=1`
+      '/daily-dishes?active=1'
     );
 
     dailyDishes = response.dishes;
@@ -360,7 +371,7 @@ function renderDailyDishes() {
 
     div.innerHTML = `
       <strong>${dish.name}</strong>
-      <span>$${Number(dish.price).toFixed(2)}</span>
+      <span>${formatMoney2(dish.price)}</span>
     `;
 
     div.addEventListener('click', () => addDailyDishToCart(dish));
@@ -420,7 +431,7 @@ function renderCart() {
           <button class="quantity-btn plus">+</button>
         </div>
       </td>
-      <td>$${subtotal.toFixed(2)}</td>
+      <td>${formatMoney2(subtotal)}</td>
       <td><button class="remove-btn">X</button></td>
     `;
 
@@ -435,7 +446,7 @@ function renderCart() {
     tbody.appendChild(tr);
   });
 
-  totalEl.textContent = `$${total.toFixed(2)}`;
+  totalEl.textContent = formatMoney2(total);
 }
 
 function changeQuantity(productId, delta) {
@@ -511,6 +522,8 @@ async function confirmSale() {
   const payload = {
   sale_type: saleTypeSelect.value,
   payment_method: document.getElementById('paymentMethod').value,
+  // Vinculamos la venta al ID de la caja abierta actual (Recomendación Auditoría 4.1)
+  ...(currentClosureId ? { closure_id: currentClosureId } : {}),
   // Restauramos menu_order_id para mantener el vínculo en el backend,
   // aunque esto pueda causar duplicidad si el backend no está optimizado.
   ...(activeMenuOrderId ? { menu_order_id: activeMenuOrderId } : {}),
@@ -564,14 +577,6 @@ const saleForTicket = {
 };
 localStorage.setItem('lastSale', JSON.stringify(saleForTicket));
 
-    // Add to total sales
-    const saleTotal = Number(response.order?.total_amount);
-    const normalizedSaleTotal = Number.isFinite(saleTotal)
-      ? saleTotal
-      : cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    totalSales += normalizedSaleTotal;
-    localStorage.setItem('totalSales', totalSales.toString());
-
     if (activeMenuOrderId) {
       hideMenuOrder(activeMenuOrderId);
     }
@@ -618,17 +623,15 @@ async function loadCashStatus() {
 
     cashIsOpen = getCashOpenFlag(data);
     cashClosedToday = getClosedTodayFlag(data);
+    currentClosureId = extractClosureIdFromSummary(data);
 
     const expectedFromSummary = extractExpectedAmount(data);
     if (expectedFromSummary !== null) {
-      currentCashExpected = expectedFromSummary;
-      totalSales = expectedFromSummary;
-      localStorage.setItem('totalSales', totalSales.toString());
+      expectedCashAmount = expectedFromSummary;
     } else {
-      // ADVERTENCIA: Si el backend no devuelve el monto esperado, el uso de totalSales de localStorage
-      // es riesgoso ya que puede incluir ventas no cobradas en efectivo o estar desincronizado.
-      console.warn('Backend no devolvió monto esperado de caja. Usando fallback de localStorage (riesgo de inconsistencia).');
-      currentCashExpected = totalSales;
+      // Si el backend no devuelve el monto esperado, lo dejamos en 0 o el último valor conocido.
+      // Ya no usamos fallback de localStorage para evitar datos inconsistentes entre dispositivos.
+      console.warn('Backend no devolvió monto esperado de caja.');
     }
 
     if (cashIsOpen) {
@@ -682,6 +685,9 @@ async function handleCashAction() {
 }
 
 async function openCash(forceReopen = false) {
+  const cashActionBtn = document.getElementById('cashActionBtn');
+  if (cashActionBtn) cashActionBtn.disabled = true;
+
   try {
     const response = await apiFetch('/dashboard/cash-open', {
       method: 'POST',
@@ -695,8 +701,6 @@ async function openCash(forceReopen = false) {
     }
 
     await loadCashStatus();
-    totalSales = extractExpectedAmount(response) ?? currentCashExpected ?? totalSales;
-    localStorage.setItem('totalSales', totalSales.toString());
 
     if (cashIsOpen) {
       showNotification(
@@ -710,13 +714,15 @@ async function openCash(forceReopen = false) {
   } catch (error) {
     const message = error?.message || 'No se pudo abrir la caja. Verificá el backend.';
     showNotification(message, 'error');
+  } finally {
+    if (cashActionBtn) cashActionBtn.disabled = false;
   }
 }
 
 
 async function openCashModal() {
   await loadCashStatus();
-  const expected = currentCashExpected ?? totalSales;
+  const expected = expectedCashAmount;
   document.getElementById('cashExpected').textContent = formatMoney2(expected);
 
   document.getElementById('cashDeclared').value = '';
@@ -729,6 +735,8 @@ function closeCashModal() {
   document.getElementById('cashModal').classList.add('hidden');
 }
 async function confirmCashClosure() {
+  const confirmBtn = document.getElementById('confirmCashClose');
+
   const declaredInput = document.getElementById('cashDeclared').value;
   if (declaredInput === '' || declaredInput === null) {
     showNotification('Ingresa el monto declarado para cerrar caja.', 'warning');
@@ -741,6 +749,8 @@ async function confirmCashClosure() {
     showNotification('Ingresa un monto declarado válido.', 'warning');
     return;
   }
+
+  if (confirmBtn) confirmBtn.disabled = true;
 
   const notes = document.getElementById('cashNotes').value;
 
@@ -790,6 +800,8 @@ async function confirmCashClosure() {
   } catch (error) {
     showNotification('Error al cerrar caja. Inténtalo de nuevo.', 'error');
     console.error(error);
+  } finally {
+    if (confirmBtn) confirmBtn.disabled = false;
   }
 }
 

@@ -288,12 +288,6 @@ function getToday() {
   return new Date().toISOString().split('T')[0];
 }
 
-function formatMoney(value) {
-  return Number(value).toLocaleString('es-AR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
-}
 
 function formatDate(date) {
   return new Date(date).toLocaleDateString();
