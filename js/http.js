@@ -16,7 +16,17 @@ async function apiFetch(endpoint, options = {}) {
     throw new Error('No autenticado');
   }
 
-  return response.json();
+  const data = await response.json();
+
+  if (data && typeof data === 'object') {
+    Object.defineProperty(data, '$status', {
+      value: response.status,
+      enumerable: false,
+      configurable: true
+    });
+  }
+
+  return data;
 }
 
 /**
