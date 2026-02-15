@@ -625,6 +625,9 @@ async function loadCashStatus() {
       totalSales = expectedFromSummary;
       localStorage.setItem('totalSales', totalSales.toString());
     } else {
+      // ADVERTENCIA: Si el backend no devuelve el monto esperado, el uso de totalSales de localStorage
+      // es riesgoso ya que puede incluir ventas no cobradas en efectivo o estar desincronizado.
+      console.warn('Backend no devolvió monto esperado de caja. Usando fallback de localStorage (riesgo de inconsistencia).');
       currentCashExpected = totalSales;
     }
 

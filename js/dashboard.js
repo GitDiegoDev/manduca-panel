@@ -159,8 +159,12 @@ async function loadSalesTickets(from, to) {
       return;
     }
 
-    // Filtrar pedidos sin método de pago (pendientes del menú)
-    const filteredTickets = tickets.filter(order => order.payment_method);
+    // Filtrar pedidos confirmados: deben tener método de pago y estado 'paid'
+    // Nota: El backend actualmente puede no enviar el campo 'status', por lo que validamos payment_method como proxy de confirmación.
+    const filteredTickets = tickets.filter(order => {
+      const isPaid = order.status ? order.status === 'paid' : true;
+      return order.payment_method && isPaid;
+    });
 
     if (filteredTickets.length === 0) {
       tbody.innerHTML =
@@ -286,8 +290,8 @@ function getToday() {
 
 function formatMoney(value) {
   return Number(value).toLocaleString('es-AR', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
   });
 }
 
