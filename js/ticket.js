@@ -26,8 +26,8 @@ const SOURCE_TYPES = {
 // ==========================================
 function formatMoney(value) {
   return Number(value).toLocaleString('es-AR', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
   });
 }
 
