@@ -187,6 +187,7 @@ let currentClosureId = null;
 
 function getApiErrorMessage(payload) {
   if (!payload || typeof payload !== 'object') return '';
+  if (payload.success === true) return '';
   return payload.error || payload.message || payload.detail || '';
 }
 
@@ -203,6 +204,7 @@ function extractClosureIdFromSummary(payload) {
   return payload.id ||
          payload.closure_id ||
          payload.cash_id ||
+         payload.current_id ||
          payload.closure?.id ||
          payload.cash?.id ||
          payload.current_closure?.id;
@@ -211,29 +213,33 @@ function extractClosureIdFromSummary(payload) {
 function extractExpectedAmount(payload) {
   if (!payload || typeof payload !== 'object') return null;
 
-  const candidates = [
-    payload.expected_amount,
-    payload.expected_total,
-    payload.total_expected,
-    payload.current_total,
-    payload.total_sales,
-    payload.cash_total
+  const keys = [
+    'expected_amount',
+    'expected_total',
+    'total_expected',
+    'current_total',
+    'total_sales',
+    'cash_total',
+    'total_amount',
+    'total'
   ];
 
-  const nestedCash = payload.cash && typeof payload.cash === 'object'
-    ? [
-        payload.cash.expected_amount,
-        payload.cash.expected_total,
-        payload.cash.total_expected,
-        payload.cash.current_total,
-        payload.cash.total_sales,
-        payload.cash.cash_total
-      ]
-    : [];
+  // Buscamos en nivel superior
+  for (const key of keys) {
+    const val = toFiniteNumber(payload[key]);
+    if (val !== null) return val;
+  }
 
-  for (const candidate of [...candidates, ...nestedCash]) {
-    const parsed = toFiniteNumber(candidate);
-    if (parsed !== null) return parsed;
+  // Buscamos en objetos anidados conocidos
+  const containers = ['cash', 'closure', 'current_closure'];
+  for (const container of containers) {
+    const obj = payload[container];
+    if (obj && typeof obj === 'object') {
+      for (const key of keys) {
+        const val = toFiniteNumber(obj[key]);
+        if (val !== null) return val;
+      }
+    }
   }
 
   return null;
