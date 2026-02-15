@@ -24,12 +24,6 @@ const SOURCE_TYPES = {
 // ==========================================
 // HELPERS
 // ==========================================
-function formatMoney(value) {
-  return Number(value).toLocaleString('es-AR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
-}
 
 function formatDateTime(date) {
   return new Date(date).toLocaleString();

@@ -119,8 +119,8 @@ function renderProductsTable(products) {
     tr.innerHTML = `
       <td>${product.name}</td>
       <td>${product.category?.name ?? '-'}</td>
-      <td>$${Number(product.price_retail).toFixed(2)}</td>
-      <td>${product.price_wholesale ? `$${Number(product.price_wholesale).toFixed(2)}` : '-'}</td>
+      <td>$${formatMoney(product.price_retail)}</td>
+      <td>${product.price_wholesale ? `$${formatMoney(product.price_wholesale)}` : '-'}</td>
       <td>${product.stock}</td>
       <td>${product.show_in_menu ? 'Sí' : 'No'}</td>
       <td>${product.active ? 'Sí' : 'No'}</td>

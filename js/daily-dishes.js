@@ -47,7 +47,7 @@ function renderDailyDishes(dishes) {
     tr.innerHTML = `
       <td>${dish.name}</td>
       <td>${dish.description ?? '-'}</td>
-      <td>$${Number(dish.price).toFixed(2)}</td>
+      <td>$${formatMoney(dish.price)}</td>
       <td>${dish.active ? 'Sí' : 'No'}</td>
       <td>
         <button class="btn-edit">✏️</button>

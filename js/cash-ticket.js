@@ -14,12 +14,6 @@ const PAYMENT_METHODS = {
 // ==========================================
 // FORMATO MONEDA (ARG)
 // ==========================================
-function formatMoney(value) {
-  return Number(value).toLocaleString('es-AR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
-}
 
 // ==========================================
 // HELPERS FECHA
