@@ -2211,3 +2211,53 @@ button[type="submit"]:not(:disabled):not(:hover) {
 /* ==========================================================================
    FIN DEL ARCHIVO CSS UNIFICADO - PALETA MEJORADA
    ========================================================================== */
+/* ==========================================================================
+   23. CARGA Y TRANSICIONES (LOGOUT/LOGIN)
+   ========================================================================== */
+
+.fullscreen-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  backdrop-filter: blur(5px);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.fullscreen-loader .spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid var(--manduca-primary-soft);
+  border-top-color: var(--manduca-primary);
+  border-radius: 50%;
+  animation: spin-simple 1s linear infinite;
+  margin-bottom: var(--space-md);
+}
+
+@keyframes spin-simple {
+  to { transform: rotate(360deg); }
+}
+
+.fullscreen-loader p {
+  color: var(--manduca-primary-dark);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+/* Mejora para el botón en estado de carga */
+button.loading {
+  color: transparent !important;
+}
+
+button.loading::after {
+  border-width: 3px;
+  width: 24px;
+  height: 24px;
+}
