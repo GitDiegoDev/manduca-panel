@@ -285,9 +285,9 @@ function viewCashClosure(id) {
 ========================= */
 
 function getToday() {
-  return new Date().toISOString().split('T')[0];
+  const today = new Date();
+  return today.toLocaleDateString('sv-SE');
 }
-
 
 function formatDate(date) {
   return new Date(date).toLocaleDateString();
