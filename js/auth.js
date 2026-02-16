@@ -17,7 +17,20 @@ function isAuthenticated() {
 }
 
 function logout() {
+  // Mostrar pantalla de carga
+  const loader = document.createElement('div');
+  loader.className = 'fullscreen-loader';
+  loader.innerHTML = `
+    <div class="spinner"></div>
+    <p>Cerrando sesión...</p>
+  `;
+  document.body.appendChild(loader);
+
   localStorage.removeItem('manduca_token');
   localStorage.removeItem('manduca_user');
-  window.location.href = 'index.html';
+
+  // Pequeño retraso para que la animación sea visible
+  setTimeout(() => {
+    window.location.href = 'index.html';
+  }, 600);
 }
