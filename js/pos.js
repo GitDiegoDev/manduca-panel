@@ -800,7 +800,8 @@ async function confirmCashClosure() {
     });
 
     const closureError = getApiErrorMessage(response);
-    const closurePayload = extractClosurePayload(response);
+    const closurePayload = response.closure ?? response;
+
     if (closureError || !closurePayload) {
       showNotification(closureError || 'No se pudo cerrar la caja.', 'error');
       if (confirmClosureBtn) confirmClosureBtn.disabled = false;
