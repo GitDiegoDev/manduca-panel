@@ -646,7 +646,8 @@ function renderCashStatus() {
 
 async function loadCashStatus() {
   try {
-    const data = await apiFetch('/dashboard/cash-summary');
+    // Agregamos timestamp para evitar cache del navegador y asegurar estado real
+    const data = await apiFetch(`/dashboard/cash-summary?t=${Date.now()}`);
 
     // Caso 200 OK pero con mensaje de error (algunos backends devuelven 200 con error: "...")
     const summaryError = getApiErrorMessage(data);
@@ -736,17 +737,19 @@ async function openCash(forceReopen = false) {
       return;
     }
 
-    await loadCashStatus();
+    // Actualizar estado local inmediatamente desde la respuesta del servidor
+    cashIsOpen = true;
+    cashClosedToday = false;
+    currentClosureId = extractClosureIdFromSummary(response);
+    renderCashStatus();
 
-    if (cashIsOpen) {
-      showNotification(
-        forceReopen ? 'Caja reabierta correctamente.' : 'Caja abierta correctamente.',
-        'success'
-      );
-      return;
-    }
+    // Sincronizar con el dashboard en segundo plano por si hubo otros cambios
+    loadCashStatus();
 
-    showNotification('No se pudo abrir la caja. Verificá el estado e intentá de nuevo.', 'error');
+    showNotification(
+      forceReopen ? 'Caja reabierta correctamente.' : 'Caja abierta correctamente.',
+      'success'
+    );
   } catch (error) {
     const message = error?.message || 'No se pudo abrir la caja. Verificá el backend.';
     showNotification(message, 'error');
@@ -800,7 +803,8 @@ async function confirmCashClosure() {
     });
 
     const closureError = getApiErrorMessage(response);
-    const closurePayload = response.closure ?? response;
+    // Usamos el helper para normalizar el payload del cierre
+    const closurePayload = extractClosurePayload(response);
 
     if (closureError || !closurePayload) {
       showNotification(closureError || 'No se pudo cerrar la caja.', 'error');
@@ -819,7 +823,7 @@ async function confirmCashClosure() {
     closeCashModal();
     renderCashStatus();
 
-    // 3. Abrir ticket inmediatamente
+    // 3. Preparar ticket
     const ticketUrl = closurePayload.id
       ? `cash-ticket.html?id=${closurePayload.id}`
       : 'cash-ticket.html';
@@ -832,11 +836,13 @@ async function confirmCashClosure() {
       })
     );
 
+    // 4. Abrir ticket y notificar
     window.open(ticketUrl, '_blank');
     showNotification('Caja cerrada correctamente. Se ha abierto el ticket en una nueva pestaña.', 'success');
 
-    // 4. Sincronizar con el backend en segundo plano
-    loadCashStatus();
+    // 5. Sincronizar con el backend de forma asíncrona pero asegurando el await
+    // para evitar que un loadCashStatus tardío sobrescriba el estado local
+    await loadCashStatus();
 
   } catch (error) {
     showNotification('Error al cerrar caja. Inténtalo de nuevo.', 'error');
