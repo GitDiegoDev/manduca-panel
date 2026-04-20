@@ -98,7 +98,13 @@ async function loadProducts() {
 
   try {
     const response = await apiFetch(`/products${query}`);
-    renderProductsTable(response.products);
+
+    // Manejar diferentes formatos de respuesta
+    const productList = Array.isArray(response)
+      ? response
+      : response.products || response.data || [];
+
+    renderProductsTable(productList);
   } catch (error) {
     console.error('Error cargando productos', error);
   }
@@ -187,9 +193,10 @@ function openStockModal(product) {
 
   document.getElementById('stockQuantity').value = '';
   document.getElementById('stockReason').value = '';
-  document.getElementById('stockType').value = 'adjust';
+  document.getElementById('stockType').value = ''; // Forzar selección
 
   document.getElementById('stockModal').classList.remove('hidden');
+  document.getElementById('stockQuantity').focus();
 }
 
 function closeStockModal() {
@@ -246,6 +253,12 @@ async function submitProductForm(e) {
 async function saveStockMovement() {
   if (!currentStockProduct) return;
 
+  const type = document.getElementById('stockType').value;
+  if (!type) {
+    alert('Debe seleccionar el tipo de movimiento');
+    return;
+  }
+
   const quantity = Number(document.getElementById('stockQuantity').value);
 
   if (!quantity || quantity === 0) {
@@ -253,7 +266,6 @@ async function saveStockMovement() {
     return;
   }
 
-  const type = document.getElementById('stockType').value;
   const reason = document.getElementById('stockReason').value;
 
   const endpoint =
