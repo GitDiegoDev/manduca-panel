@@ -100,9 +100,12 @@ async function loadProducts() {
     const response = await apiFetch(`/products${query}`);
 
     // Manejar diferentes formatos de respuesta
-    const productList = Array.isArray(response)
+    let productList = Array.isArray(response)
       ? response
       : response.products || response.data || [];
+
+    // Ordenar por sort_order
+    productList.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
 
     renderProductsTable(productList);
   } catch (error) {
@@ -115,7 +118,7 @@ function renderProductsTable(products) {
   tbody.innerHTML = '';
 
   if (!products || products.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="8">No hay productos</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="9">No hay productos</td></tr>`;
     return;
   }
 
@@ -128,6 +131,7 @@ function renderProductsTable(products) {
       <td>$${formatMoney(product.price_retail)}</td>
       <td>${product.price_wholesale ? `$${formatMoney(product.price_wholesale)}` : '-'}</td>
       <td>${product.stock}</td>
+      <td>${product.sort_order ?? 0}</td>
       <td>${product.show_in_menu ? 'Sí' : 'No'}</td>
       <td>${product.active ? 'Sí' : 'No'}</td>
       <td>
@@ -167,6 +171,7 @@ function openEditProductModal(product) {
   document.getElementById('priceRetail').value = product.price_retail;
   document.getElementById('priceWholesale').value = product.price_wholesale ?? '';
   document.getElementById('lowStock').value = product.low_stock_threshold ?? '';
+  document.getElementById('sortOrder').value = product.sort_order ?? 0;
   document.getElementById('showInMenu').checked = product.show_in_menu;
   document.getElementById('active').checked = product.active;
 
@@ -220,6 +225,7 @@ async function submitProductForm(e) {
     price_retail: document.getElementById('priceRetail').value,
     price_wholesale: document.getElementById('priceWholesale').value || null,
     low_stock_threshold: document.getElementById('lowStock').value || null,
+    sort_order: parseInt(document.getElementById('sortOrder').value, 10) || 0,
     show_in_menu: document.getElementById('showInMenu').checked,
     active: document.getElementById('active').checked,
   };
