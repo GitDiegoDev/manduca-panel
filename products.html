@@ -31,7 +31,12 @@
     <!-- HEADER DEL MÓDULO -->
     <section class="module-header">
       <h2>Productos</h2>
-      <button id="btnNewProduct">➕ Nuevo producto</button>
+      <div class="actions">
+        <button id="btnReorder" class="btn-secondary">🔃 Reordenar</button>
+        <button id="btnSaveOrder" class="btn-success hidden">💾 Guardar Orden</button>
+        <button id="btnCancelReorder" class="btn-danger hidden">❌ Cancelar</button>
+        <button id="btnNewProduct">➕ Nuevo producto</button>
+      </div>
     </section>
 
     <!-- FILTROS -->
@@ -176,6 +181,7 @@
   <script src="js/auth.js"></script>
   <script src="js/guard.js"></script>
   <script src="js/http.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
   <!-- SCRIPT DEL MÓDULO -->
   <script src="js/products.js"></script>

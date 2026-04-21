@@ -2209,6 +2209,36 @@ button[type="submit"]:not(:disabled):not(:hover) {
 }
 
 /* ==========================================================================
+   PRODUCT REORDERING STYLES
+   ========================================================================== */
+.drag-handle {
+  cursor: grab;
+  font-weight: bold;
+  color: var(--manduca-primary);
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.sortable-ghost {
+  opacity: 0.4;
+  background-color: var(--manduca-primary-soft) !important;
+}
+
+.btn-secondary {
+  background: var(--gray-500) !important;
+}
+
+.btn-success {
+  background: var(--color-success) !important;
+}
+
+.btn-danger {
+  background: var(--color-error) !important;
+}
+
+/* ==========================================================================
    FIN DEL ARCHIVO CSS UNIFICADO - PALETA MEJORADA
    ========================================================================== */
 /* ==========================================================================
