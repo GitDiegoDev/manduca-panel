@@ -131,8 +131,9 @@ function renderProductsTable(products) {
       <td>${product.show_in_menu ? 'Sí' : 'No'}</td>
       <td>${product.active ? 'Sí' : 'No'}</td>
       <td>
-        <button class="btn-edit">✏️</button>
-        <button class="btn-stock">📦</button>
+        <button class="btn-edit" title="Editar">✏️</button>
+        <button class="btn-stock" title="Ajustar Stock">📦</button>
+        <button class="btn-delete" title="Eliminar">🗑️</button>
       </td>
     `;
 
@@ -141,6 +142,9 @@ function renderProductsTable(products) {
 
     tr.querySelector('.btn-stock')
       .addEventListener('click', () => openStockModal(product));
+
+    tr.querySelector('.btn-delete')
+      .addEventListener('click', () => deleteProduct(product.id));
 
     tbody.appendChild(tr);
   });
@@ -242,6 +246,25 @@ async function submitProductForm(e) {
 
   } catch (error) {
     alert('Error guardando producto');
+    console.error(error);
+  }
+}
+
+/* =========================
+   DELETE PRODUCT
+========================= */
+
+async function deleteProduct(id) {
+  if (!confirm('¿Está seguro de que desea eliminar este producto?')) return;
+
+  try {
+    await apiFetch(`/products/${id}`, {
+      method: 'DELETE',
+    });
+
+    await loadProducts();
+  } catch (error) {
+    alert('Error eliminando producto');
     console.error(error);
   }
 }
