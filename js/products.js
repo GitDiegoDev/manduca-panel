@@ -1,4 +1,7 @@
 let categories = [];
+let products = [];
+let reorderMode = false;
+let sortableInstance = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
   const user = getUser();
@@ -14,6 +17,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   document
     .getElementById('btnNewProduct')
     .addEventListener('click', openNewProductModal);
+
+  document
+    .getElementById('btnReorder')
+    .addEventListener('click', toggleReorderMode);
+
+  document
+    .getElementById('btnCancelReorder')
+    .addEventListener('click', toggleReorderMode);
+
+  document
+    .getElementById('btnSaveOrder')
+    .addEventListener('click', saveNewOrder);
 
   document
     .getElementById('productForm')
@@ -100,11 +115,14 @@ async function loadProducts() {
     const response = await apiFetch(`/products${query}`);
 
     // Manejar diferentes formatos de respuesta
-    const productList = Array.isArray(response)
+    products = Array.isArray(response)
       ? response
       : response.products || response.data || [];
 
-    renderProductsTable(productList);
+    // Ordenar por sort_order
+    products.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+
+    renderProductsTable(products);
   } catch (error) {
     console.error('Error cargando productos', error);
   }
@@ -121,26 +139,40 @@ function renderProductsTable(products) {
 
   products.forEach(product => {
     const tr = document.createElement('tr');
+    tr.dataset.id = product.id;
 
-    tr.innerHTML = `
-      <td>${product.name}</td>
-      <td>${product.category?.name ?? '-'}</td>
-      <td>$${formatMoney(product.price_retail)}</td>
-      <td>${product.price_wholesale ? `$${formatMoney(product.price_wholesale)}` : '-'}</td>
-      <td>${product.stock}</td>
-      <td>${product.show_in_menu ? 'Sí' : 'No'}</td>
-      <td>${product.active ? 'Sí' : 'No'}</td>
-      <td>
-        <button class="btn-edit">✏️</button>
-        <button class="btn-stock">📦</button>
-      </td>
-    `;
+    if (reorderMode) {
+      tr.innerHTML = `
+        <td class="drag-handle">☰ ${product.name}</td>
+        <td>${product.category?.name ?? '-'}</td>
+        <td>$${formatMoney(product.price_retail)}</td>
+        <td>${product.price_wholesale ? `$${formatMoney(product.price_wholesale)}` : '-'}</td>
+        <td>${product.stock}</td>
+        <td>${product.show_in_menu ? 'Sí' : 'No'}</td>
+        <td>${product.active ? 'Sí' : 'No'}</td>
+        <td>-</td>
+      `;
+    } else {
+      tr.innerHTML = `
+        <td>${product.name}</td>
+        <td>${product.category?.name ?? '-'}</td>
+        <td>$${formatMoney(product.price_retail)}</td>
+        <td>${product.price_wholesale ? `$${formatMoney(product.price_wholesale)}` : '-'}</td>
+        <td>${product.stock}</td>
+        <td>${product.show_in_menu ? 'Sí' : 'No'}</td>
+        <td>${product.active ? 'Sí' : 'No'}</td>
+        <td>
+          <button class="btn-edit">✏️</button>
+          <button class="btn-stock">📦</button>
+        </td>
+      `;
 
-    tr.querySelector('.btn-edit')
-      .addEventListener('click', () => openEditProductModal(product));
+      tr.querySelector('.btn-edit')
+        .addEventListener('click', () => openEditProductModal(product));
 
-    tr.querySelector('.btn-stock')
-      .addEventListener('click', () => openStockModal(product));
+      tr.querySelector('.btn-stock')
+        .addEventListener('click', () => openStockModal(product));
+    }
 
     tbody.appendChild(tr);
   });
@@ -202,6 +234,69 @@ function openStockModal(product) {
 function closeStockModal() {
   document.getElementById('stockModal').classList.add('hidden');
   currentStockProduct = null;
+}
+
+/* =========================
+   REORDER LOGIC
+========================= */
+
+function toggleReorderMode() {
+  reorderMode = !reorderMode;
+
+  const btnReorder = document.getElementById('btnReorder');
+  const btnSaveOrder = document.getElementById('btnSaveOrder');
+  const btnCancelReorder = document.getElementById('btnCancelReorder');
+  const btnNewProduct = document.getElementById('btnNewProduct');
+  const tbody = document.getElementById('productsTableBody');
+
+  if (reorderMode) {
+    btnReorder.classList.add('hidden');
+    btnNewProduct.classList.add('hidden');
+    btnSaveOrder.classList.remove('hidden');
+    btnCancelReorder.classList.remove('hidden');
+
+    sortableInstance = new Sortable(tbody, {
+      animation: 150,
+      handle: '.drag-handle',
+      ghostClass: 'sortable-ghost'
+    });
+  } else {
+    btnReorder.classList.remove('hidden');
+    btnNewProduct.classList.remove('hidden');
+    btnSaveOrder.classList.add('hidden');
+    btnCancelReorder.classList.add('hidden');
+
+    if (sortableInstance) {
+      sortableInstance.destroy();
+      sortableInstance = null;
+    }
+  }
+
+  renderProductsTable(products);
+}
+
+async function saveNewOrder() {
+  const tbody = document.getElementById('productsTableBody');
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+  const orderedIds = rows.map(row => row.dataset.id).filter(id => id);
+
+  try {
+    const response = await apiFetch('/products/reorder', {
+      method: 'POST',
+      body: JSON.stringify({ ordered_ids: orderedIds })
+    });
+
+    if (response.success || response.message) {
+      alert('Orden guardado correctamente');
+      toggleReorderMode();
+      await loadProducts();
+    } else {
+      throw new Error('No se pudo guardar el orden');
+    }
+  } catch (error) {
+    console.error('Error guardando el orden:', error);
+    alert('Error guardando el nuevo orden de productos');
+  }
 }
 
 /* =========================
