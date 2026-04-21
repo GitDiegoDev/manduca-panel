@@ -104,8 +104,13 @@ async function loadProducts() {
       ? response
       : response.products || response.data || [];
 
-    // Ordenar por sort_order
-    productList.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+    // Ordenar por sort_order (principal) y nombre (secundario)
+    productList.sort((a, b) => {
+      const orderA = a.sort_order || 0;
+      const orderB = b.sort_order || 0;
+      if (orderA !== orderB) return orderA - orderB;
+      return a.name.localeCompare(b.name);
+    });
 
     renderProductsTable(productList);
   } catch (error) {
